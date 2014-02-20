@@ -4,7 +4,7 @@
 
 (library
  (search)
- (export tree-search depth-first-tree-search)
+ (export tree-search depth-first-tree-search breath-first-tree-search)
  (import (rnrs base (6))
          (rnrs control (6))
          (prefix (ai node) node:)
@@ -33,4 +33,9 @@
 
  (define (depth-first-tree-search problem on-iteration-fn)
    (tree-search problem (frontier:new-lifo) on-iteration-fn))
+ 
+ 
+ ;Oefening 2
+ (define (breath-first-tree-search problem on-iteration-fn)
+   (tree-search problem (frontier:new-fifo) on-iteration-fn))
  )
