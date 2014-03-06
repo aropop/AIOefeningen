@@ -82,7 +82,7 @@
  
  ;debug 
  
- (define puzzle (problem:new initial step-cost is-goal? succesors))
+ (define puzzle (problem:new initial step-cost (lambda (x) 0) is-goal? succesors))
  
  (define (run)
    (print-path-to (search:depth-first-tree-search puzzle (lambda (a b c d e) 

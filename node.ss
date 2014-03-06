@@ -14,7 +14,7 @@
 
 (library
  (node)
- (export node? initial-node parent state action depth expand! path)
+ (export node? initial-node parent state action depth expand! path cost)
  (import (rnrs base (6))
          (prefix (ai problem) problem:)
          (prefix (ai successor) successor:))
@@ -28,7 +28,7 @@
  (define (initial-node problem)
    (assert (problem:problem? problem))
    (let ([state (problem:initial problem)])
-     (new #f state #f)))
+     (new #f state #f 0)))
  
  (define (parent node)
    (assert (node? node))
@@ -46,6 +46,10 @@
    (assert (node? node))
    (vector-ref node 4))
  
+ (define (cost node)
+   (assert (node? node))
+   (vector-ref node 6))
+ 
  ;; Expands the node according to the given problem implementation. 
  ;; The new nodes are (added to this node and) returned.
  (define (expand! node problem)
@@ -55,11 +59,13 @@
           [successors (problem:successors problem old-state)]
           [children 
            (map (lambda (successor)
-                  (let ([new-state (successor:state successor)]
-                        [action (successor:action successor)])
+                  (let* ([new-state (successor:state successor)]
+                        [action (successor:action successor)]
+                        [cost (+ (cost node) (problem:step-cost problem old-state action new-state))])
                     (new node
                          new-state
-                         action)))
+                         action
+                         cost)))
                 successors)])
      ; The search itself does not require us to keep track of the 
      ;   children of a node. It is necessary to keep track of the 
@@ -83,14 +89,15 @@
  ;; - new-state, any: each node refers to a specific state in the search
  ;;     space, which is problem specific.
  ;; - action, any: the action used to reach the state of this node.
- (define (new parent new-state action)
+ (define (new parent new-state action cost)
    (assert (or (not parent) (node? parent)))
    (make parent new-state action
          (if parent (+ 1 (depth parent)) 0)
-         '()))
+         '()
+         cost))
  
- (define (make parent state action depth children)
-   (vector 'node parent state action depth children))
+ (define (make parent state action depth children cost)
+   (vector 'node parent state action depth children cost))
  
  (define (children! node children)
    (assert (node? node))

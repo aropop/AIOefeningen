@@ -5,15 +5,16 @@
 
 (library
  (problem)
- (export new problem? initial step-cost is-goal? successors)
+ (export new problem? initial step-cost is-goal? successors heuristics)
  (import (rnrs base (6)))
  
- (define (new initial step-cost is-goal? successors)
+ (define (new initial step-cost heuristics is-goal? successors)
    (assert (procedure? initial))
    (assert (procedure? step-cost))
    (assert (procedure? is-goal?))
    (assert (procedure? successors))
-   (make initial step-cost is-goal? successors))
+   (assert (procedure? heuristics))
+   (make initial step-cost heuristics is-goal? successors))
  
  (define (problem? problem)
    (and (vector? problem)
@@ -27,16 +28,20 @@
    (assert (problem? problem))
    ((vector-ref problem 2) old-state action new-state))
  
- (define (is-goal? problem state)
+ (define (heuristics problem)
    (assert (problem? problem))
-   ((vector-ref problem 3) state))
+   (vector-ref problem 3))
  
- (define (successors problem state)
+ (define (is-goal? problem state)
    (assert (problem? problem))
    ((vector-ref problem 4) state))
  
+ (define (successors problem state)
+   (assert (problem? problem))
+   ((vector-ref problem 5) state))
+ 
  ;;; private functions ----------------------------------------------------
 
- (define (make initial step-cost is-goal? successors)
-   (vector 'problem initial step-cost is-goal? successors))
+ (define (make initial step-cost heuristics is-goal? successors)
+   (vector 'problem initial step-cost heuristics is-goal? successors))
  )
