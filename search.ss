@@ -30,7 +30,7 @@
                         children
                         0)
        (frontier:insert-all! openlist children))))
-
+ 
  (define (depth-first-tree-search problem on-iteration-fn)
    (tree-search problem (frontier:new-lifo) on-iteration-fn))
  
@@ -43,7 +43,14 @@
  (define (best-first-tree-search problem on-iteration-fn priority-fun)
    (tree-search problem (frontier:new priority-fun) on-iteration-fn))
  
-
+ (define (uniform-cost-search problem on-iteration-fn)
+   (best-first-tree-search 
+    problem
+    (frontier:new (lambda (node)
+                    (/ 1 (node:cost node)))) 
+    on-iteration-fn))
+ 
+ 
  ;Oefening 4.1
  (define (greedy-best-first-tree-search problem on-iteration)
    (let ((priority-fun (lambda (node) (- ((problem:heuristics problem) (node:state node))))))
